@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-    public float moveSpeed = 10f;
+    public float acceleration = 10f;
+    public float topSpeed = 10f;
     public float jumpForce = 10f;
     Rigidbody2D rb2D;
-    Collider2D col2D;
+    Collider2D col;
     float inVer;
     float inHor;
 
@@ -15,7 +16,7 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
-        col2D= GetComponent<Collider2D>();
+        col = GetComponent<Collider2D>();
     }
 
 
@@ -29,19 +30,39 @@ public class PlayerMove : MonoBehaviour
 
     void Move(float axisIn)
     {
-        //run
+        // Add force to accellerate object to a specified max horizontal velocity (topSpeed)
+
+        if (rb2D.velocity.x < topSpeed)
+        {
+            rb2D.AddForce(Vector2.right * axisIn * acceleration);
+        }
     }
 
     void Jump(float axisIn)
     {
-        GameObject[] objects = GameObject.FindGameObjectsWithTag("Ground");
-        foreach (GameObject obj in objects)
+        // Add upward (jump) force when object is colliding with the top of a "Ground" tagged object
+
+        if (axisIn > 0)
         {
-            Collider2D collider = obj.GetComponent<Collider2D>();
-            if (rb2D.IsTouching(collider))
+            // Find "Ground" objects
+
+            GameObject[] objects = GameObject.FindGameObjectsWithTag("Ground");
+            foreach (GameObject obj in objects)
             {
-                //jump
-                break;
+                // Check for collision
+
+                Collider2D collider = obj.GetComponent<Collider2D>();
+                if (rb2D.IsTouching(collider))
+                {
+                    // Only add force if the bottom of the objects bounding box is not below the top of the "Ground" objects bounding box
+                    // (Only jumps if the object is on top of the "Ground", ignore side collisions)
+
+                    if (!(collider.bounds.max.y > col.bounds.min.y))
+                    {
+                        rb2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                        break;
+                    }
+                }
             }
         }
     }
