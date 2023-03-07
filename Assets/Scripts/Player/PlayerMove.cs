@@ -34,7 +34,18 @@ public class PlayerMove : MonoBehaviour
 
         if (rb2D.velocity.x < topSpeed)
         {
-            rb2D.AddForce(Vector2.right * axisIn * acceleration);
+            // Add Force:
+            // rb2D.AddForce(Vector2.right * axisIn * acceleration);
+
+            // Move Position:
+            // Vector3 newPos = new Vector3(transform.position.x + (axisIn * acceleration), transform.position.y, transform.position.z);
+            // rb2D.MovePosition(newPos);
+
+            // Set Velocity:
+            // rb2D.velocity.Set(rb2D.velocity.x + (axisIn * acceleration), rb2D.velocity.y);
+
+            // Fuck it, use Transform instead:
+            // transform.Translate(Vector2.right * axisIn * acceleration * Time.fixedDeltaTime);
         }
     }
 
